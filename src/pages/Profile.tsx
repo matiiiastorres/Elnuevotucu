@@ -1,99 +1,104 @@
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState, useEffect } from "react"
-import { useAuth } from "../context/AuthContext"
-import { User, MapPin, Phone } from "lucide-react"
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { User, MapPin, Phone } from 'lucide-react';
 
 const Profile = () => {
-  const { state, dispatch } = useAuth()
+  const { state, dispatch } = useAuth();
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
+    name: '',
+    phone: '',
     address: {
-      street: "",
-      city: "",
-      state: "",
-      zipCode: "",
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
     },
-  })
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState("")
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (state.user) {
       setFormData({
-        name: state.user.name || "",
-        phone: state.user.phone || "",
+        name: state.user.name || '',
+        phone: state.user.phone || '',
         address: state.user.address || {
-          street: "",
-          city: "",
-          state: "",
-          zipCode: "",
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
         },
-      })
+      });
     }
-  }, [state.user])
+  }, [state.user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage("")
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${state.token}`,
-        },
-        body: JSON.stringify(formData),
-      })
+      const response = await fetch(
+        'https://back-del-nuevo-tucu.onrender.com/api/auth/profile',
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${state.token}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        dispatch({ type: "UPDATE_USER", payload: data.user })
-        setMessage("Perfil actualizado correctamente")
+        dispatch({ type: 'UPDATE_USER', payload: data.user });
+        setMessage('Perfil actualizado correctamente');
       } else {
-        setMessage(data.message || "Error al actualizar el perfil")
+        setMessage(data.message || 'Error al actualizar el perfil');
       }
     } catch (error) {
-      setMessage("Error al actualizar el perfil")
+      setMessage('Error al actualizar el perfil');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
-    if (name.startsWith("address.")) {
-      const addressField = name.split(".")[1]
+    if (name.startsWith('address.')) {
+      const addressField = name.split('.')[1];
       setFormData({
         ...formData,
         address: {
           ...formData.address,
           [addressField]: value,
         },
-      })
+      });
     } else {
       setFormData({
         ...formData,
         [name]: value,
-      })
+      });
     }
-  }
+  };
 
   if (!state.isAuthenticated) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Inicia sesión para ver tu perfil</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            Inicia sesión para ver tu perfil
+          </h1>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -104,21 +109,27 @@ const Profile = () => {
             {state.user?.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">{state.user?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {state.user?.name}
+            </h1>
             <p className="text-gray-600">{state.user?.email}</p>
             <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-1">
-              {state.user?.role === "customer"
-                ? "Cliente"
-                : state.user?.role === "store_owner"
-                  ? "Dueño de tienda"
-                  : "Administrador"}
+              {state.user?.role === 'customer'
+                ? 'Cliente'
+                : state.user?.role === 'store_owner'
+                ? 'Dueño de tienda'
+                : 'Administrador'}
             </span>
           </div>
         </div>
 
         {message && (
           <div
-            className={`mb-6 p-4 rounded-md ${message.includes("Error") ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}
+            className={`mb-6 p-4 rounded-md ${
+              message.includes('Error')
+                ? 'bg-red-100 text-red-700'
+                : 'bg-green-100 text-green-700'
+            }`}
           >
             {message}
           </div>
@@ -126,7 +137,10 @@ const Profile = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               <User className="h-4 w-4 inline mr-2" />
               Nombre
             </label>
@@ -142,7 +156,10 @@ const Profile = () => {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               <Phone className="h-4 w-4 inline mr-2" />
               Teléfono
             </label>
@@ -204,12 +221,12 @@ const Profile = () => {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
-            {loading ? "Actualizando..." : "Actualizar Perfil"}
+            {loading ? 'Actualizando...' : 'Actualizar Perfil'}
           </button>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
