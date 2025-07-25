@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+  # Si no usas Netlify Functions, puedes omitir la línea de functions
+  # functions = "netlify/functions" 
+
+# Esto es crucial para que Netlify no intente usar el runtime de Next.js
+# Puedes agregar esto para asegurar que no se apliquen plugins de frameworks específicos
+[build.environment]
+  # Deshabilita la detección automática de frameworks si es necesario
+  # NETLIFY_NEXT_PLUGIN_SKIP = "true" 
+  # NETLFLIX_NEXT_PLUGIN_DISABLED = "true" # Otra variable que a veces funciona
